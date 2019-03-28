@@ -1,7 +1,7 @@
 ## Live Data Plotting
 Thanks to [Tom Diethe](https://github.com/tdiethe/flask-live-charts)
 
-![](static/live-random-data.png?raw=true)
+![](live-random-data.png?raw=true)
 
 #### Technologies
 ```
