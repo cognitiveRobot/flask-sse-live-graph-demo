@@ -1,0 +1,9 @@
+#Environment
+
+venv
+venv/
+venv*
+__pycache__/
+
+# Database file
+*.sql

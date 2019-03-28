@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="container-fluid">
+            <br/>
+            <h4>Live data plotting using Flask and Highcharts.</h4>
+        </div>
+
+
+    <div class="container-fluid">
+        <!-- Example row of columns -->
+        <div class="row">
+            <div class="container-fluid" id="data-container"></div>
+        </div>
+    </div>
+    <hr>
+
+    <div class="container" id="content">
+        <div class="row">
+            <h3>Incoming Stream:</h3>
+            <div id="messageDiv"></div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block script %}   
+
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/highcharts-more.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+    <script type="text/javascript">
+        var chart;
+
+        $(document).ready(function() {
+            function listen() {
+                var source = new EventSource("/stream/");
+                var target = document.getElementById("messageDiv");
+                source.onmessage = function(msg) {
+                    // console.log(msg.data);
+                    var point = JSON.parse(msg["data"]);
+                    console.log(point[0]);
+                    console.log(point[1]);
+                    target.innerHTML = msg.data + '<br>';
+
+                    var series = chart.series[0], shift = series.data.length > 20; // shift if the series is // longer than 20
+                    console.log(series.data.length)
+
+                    // add the point
+                    chart.series[0].addPoint(point, true, shift);
+                    // console.log(chart.series[0]);
+                }
+            }
+            // listen();
+
+            chart = new Highcharts.Chart({
+                chart: {
+                    renderTo: 'data-container',
+                    defaultSeriesType: 'spline',
+                    events: {
+                        load: listen
+                    }
+                },
+                title: {
+                    text: 'Live random data'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    tickPixelInterval: 150,
+                    maxZoom: 20 * 1000
+                },
+                yAxis: {
+                    minPadding: 0.2,
+                    maxPadding: 0.2,
+                    title: {
+                        text: 'Value',
+                        margin: 80
+                    }
+                },
+                series: [{
+                    name: 'Random data',
+                    data: []
+                }]
+            });
+        });
+    </script>
+{% endblock %}
+
+
